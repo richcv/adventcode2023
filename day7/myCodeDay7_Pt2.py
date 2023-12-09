@@ -24,6 +24,24 @@ class HandClass:
         self.rank = rank
 handCollection = []
 
+def GetHandTypeInEnglish(handType):
+   englishWords = "??"
+   if (handType == 0):
+      englishWords = "High Card"
+   elif (handType == 1):
+      englishWords = "One Pair"
+   elif (handType == 2):
+      englishWords = "Two Pair"
+   elif (handType == 3):
+      englishWords = "Three of a Kind"
+   elif (handType == 4):
+      englishWords = "Full Boat"
+   elif (handType == 5):
+      englishWords = "Four of a kind"
+   elif (handType == 6):
+      englishWords = "Five of a kind baaaby!"
+      
+   return englishWords
 # ---------------------------------------------------
 # DetermineHandType
 # ---------------------------------------------------
@@ -31,11 +49,33 @@ def DetermineHandType(inHandString):
    theHandType = 0
    cardCount = {}
 
+   jokersFound = 0
+   highestMatch = 0
+
    for char in inHandString:
       if char not in cardCount:
-         cardCount[char] = 1
+         if (char == 'J'):
+            jokersFound += 1
+         else:
+            cardCount[char] = 1
+            if (cardCount[char] > highestMatch):
+               highestMatch = cardCount[char]
       else:
          cardCount[char] += 1
+         if (cardCount[char] > highestMatch):
+            highestMatch = cardCount[char]
+
+   #Deal with them jokers
+   if (jokersFound > 0):
+      if (highestMatch == 0):
+         #This can only happen if the entire hand is jokers, congrats
+         cardCount['A'] = 5
+      else:
+         for char, count in cardCount.items():
+            if count == highestMatch:
+               cardCount[char] = highestMatch + jokersFound
+               jokersFound = 0
+               break
 
    #print(cardCount)
    for char, count in cardCount.items():
@@ -59,6 +99,7 @@ def DetermineHandType(inHandString):
 
    return theHandType
 
+
 # ---------------------------------------------------
 # CompareEm
 # ---------------------------------------------------
@@ -66,11 +107,11 @@ def CompareEm(obj):
    sortKey = obj.handtype
 
    extraSort = ""
-   transmog = {'2': 1, '3': 2, '4': 3, '5': 4, '6': 5, '7': 6, '8': 7, '9': 8, 'T': 9, 'J': 10, 'Q': 11, 'K': 12, 'A': 13} 
+   transmog = {'J': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, 'T': 10, 'Q': 11, 'K': 12, 'A': 13} 
    for char in obj.hand.strip():
       #print(f"  convert {char}")
       extraSort = extraSort + str(transmog[char]).zfill(2)
-   print (f"{obj.hand} extra sort key is {extraSort}")
+   #print (f"{obj.hand} extra sort key is {extraSort}")
    extraSort = str(sortKey) + extraSort
    
    return int(extraSort)
@@ -98,7 +139,7 @@ with open(inputFilePath, 'r') as file:
 #endwith
 
 for hand in handCollection:
-   print(f"Hand: {hand.hand}, Bid: {hand.bid}, HandType: {hand.handtype}")
+   print(f"Hand: {hand.hand}, Bid: {hand.bid}, HandType: {GetHandTypeInEnglish(hand.handtype)}")
 
 print ("LETS RANK EM")
 sortedCollection = sorted(handCollection, key=CompareEm)
@@ -108,7 +149,7 @@ for hand in sortedCollection:
    rankIndex += 1
    hand.rank = rankIndex
    theValue = int(hand.rank) * int(hand.bid)
-   print(f"Hand: {hand.hand}, Bid: {hand.bid}, HandType: {hand.handtype}, Rank: {hand.rank}, Value: {theValue}")
+   print(f"Hand: {hand.hand}, Bid: ${hand.bid}, HandType: {GetHandTypeInEnglish(hand.handtype)}, Rank: {hand.rank}, Value: ${theValue}")
    total = total + theValue
 
 print (f"TOTAL: {total}")
