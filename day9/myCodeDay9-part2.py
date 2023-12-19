@@ -3,7 +3,7 @@ import sys
 import os
 
 total = 0
-INPUT_FILE = "input_small.txt"
+INPUT_FILE = "input_large.txt"
 
 #class DirectionEntry:
 #    def __init__(self, left: str, right: str):
@@ -73,10 +73,22 @@ for sourceLine in sourceLines:
    theStack.append(currentLine)
    print(f"{currentLine} (length is {len(currentLine)})")
    
+   #firstNode = True
+   prevVal = 0
    totes = 0
-   for thisGuy in theStack:
-      totes = totes + int(thisGuy[len(thisGuy) - 1])
-   print (f"NEXT IN SERIES: {totes}")
+   for thisGuy in reversed(theStack):
+      
+      #if firstNode:
+      #   firstNode = False
+      #else:
+      #   totes = totes + (int(thisGuy[0]) - prevVal)
+      #print(f"  subtracting {prevVal} from {thisGuy[0]}")
+      leftVal = int(thisGuy[0]) - prevVal
+      #print(f"  LeftVal: {leftVal}")
+      prevVal = leftVal
+      totes = leftVal
+
+   print (f"LEFT OF SERIES: {totes}")
    toteTotes += totes
    print (" ")
 #end
